@@ -20,9 +20,45 @@ def reading_files(filename):
     return data, label
 
 
+def train_NB(x, y):
+    unique_features = []
+    feature_count0 = []
+    feature_count1 = []
+    feature_count_total = []
+
+    print(len(x))
+    for i in range(len(x.T)):
+        unique_features.append([])
+        feature_count0.append([])
+        feature_count1.append([])
+        feature_count_total.append([])
+
+        for j in range(len(x.T[i])):
+            if x.T[i][j] not in unique_features[i]:
+                unique_features[i].append(x.T[i][j])
+                feature_count0[i].append(0)
+                feature_count1[i].append(0)
+                feature_count_total[i].append(0)
+                index = len(feature_count0[i]) - 1
+            else:
+                index = unique_features[i].index(x.T[i][j])
+            if y[j] == -1:
+                feature_count0[i][index] += 1
+            else:
+                feature_count1[i][index] += 1
+            feature_count_total[i][index] += 1
+
+    print(unique_features)
+    print(feature_count0)
+    print(feature_count1)
+    print(feature_count_total)
+
+    return unique_features, feature_count0, feature_count1, feature_count_total
+
+
 if __name__ == '__main__':
     data, label = reading_files('Breast Cancer dataset/Breast_Cancer_dataset.txt')
-    # input_k = int(input("inter your desire k: "))
-    input_k = 2
-
-    train_data, test_data, train_labels, test_labels = train_test_split(data, label, test_size=0.2, random_state=1)
+    train_data, test_data, train_labels, test_labels = train_test_split(data, label, test_size=0.001, random_state=1)
+    print(train_labels)
+    train_NB(train_data, train_labels)
+    
