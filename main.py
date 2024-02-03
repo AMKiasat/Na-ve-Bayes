@@ -25,8 +25,9 @@ def train_NB(x, y):
     feature_count0 = []
     feature_count1 = []
     feature_count_total = []
+    y_counts = [np.count_nonzero(y == -1),
+               np.count_nonzero(y == 1)]
 
-    print(len(x))
     for i in range(len(x.T)):
         unique_features.append([])
         feature_count0.append([])
@@ -48,17 +49,46 @@ def train_NB(x, y):
                 feature_count1[i][index] += 1
             feature_count_total[i][index] += 1
 
-    print(unique_features)
-    print(feature_count0)
-    print(feature_count1)
-    print(feature_count_total)
+    # print(unique_features)
+    # print(feature_count0)
+    # print(feature_count1)
+    # print(feature_count_total)
+    # print(y_counts)
 
-    return unique_features, feature_count0, feature_count1, feature_count_total
+    return unique_features, feature_count0, feature_count1, feature_count_total, y_counts
+
+
+def test_NB(x, unique_features, feature_count0, feature_count1, feature_count_total, y_counts):
+    predict = []
+    for i in range(len(x)):
+        product0 = 1
+        product1 = 1
+        for j in range(len(x[i])):
+            if x[i][j] in unique_features[j]:
+                index = unique_features[j].index(x[i][j])
+                product0 *= feature_count0[j][index] / feature_count_total[j][index]
+                product1 *= feature_count1[j][index] / feature_count_total[j][index]
+        if product0 / y_counts[0] > product1 / y_counts[1]:
+            predict.append(-1)
+        elif product0 / y_counts[0] < product1 / y_counts[1]:
+            predict.append(1)
+        else:
+            print(x[i], product0, product1)
+            predict.append(0)
+    return predict
 
 
 if __name__ == '__main__':
     data, label = reading_files('Breast Cancer dataset/Breast_Cancer_dataset.txt')
-    train_data, test_data, train_labels, test_labels = train_test_split(data, label, test_size=0.001, random_state=1)
-    print(train_labels)
-    train_NB(train_data, train_labels)
-    
+    train_data, test_data, train_labels, test_labels = train_test_split(data, label, test_size=0.5, random_state=1)
+
+    uf, fc0, fc1, fct, label_count = train_NB(train_data, train_labels)
+
+    predictions = test_NB(test_data, uf, fc0, fc1, fct, label_count)
+    # print(predictions)
+    correct = 0
+    for i in range(len(test_labels)):
+        if predictions[i] == test_labels[i]:
+            correct += 1
+    print(correct, len(test_labels), correct / len(test_labels))
+    # print(predictions)
