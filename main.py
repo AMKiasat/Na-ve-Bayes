@@ -68,9 +68,9 @@ def test_NB(x, unique_features, feature_count0, feature_count1, feature_count_to
                 index = unique_features[j].index(x[i][j])
                 product0 *= feature_count0[j][index] / feature_count_total[j][index]
                 product1 *= feature_count1[j][index] / feature_count_total[j][index]
-        if product0 / y_counts[0] > product1 / y_counts[1]:
+        if product0 * y_counts[0] > product1 * y_counts[1]:
             predict.append(-1)
-        elif product0 / y_counts[0] < product1 / y_counts[1]:
+        elif product0 * y_counts[0] < product1 * y_counts[1]:
             predict.append(1)
         else:
             print(x[i], product0, product1)
@@ -80,7 +80,7 @@ def test_NB(x, unique_features, feature_count0, feature_count1, feature_count_to
 
 if __name__ == '__main__':
     data, label = reading_files('Breast Cancer dataset/Breast_Cancer_dataset.txt')
-    train_data, test_data, train_labels, test_labels = train_test_split(data, label, test_size=0.5, random_state=1)
+    train_data, test_data, train_labels, test_labels = train_test_split(data, label, test_size=0.5)
 
     uf, fc0, fc1, fct, label_count = train_NB(train_data, train_labels)
 
